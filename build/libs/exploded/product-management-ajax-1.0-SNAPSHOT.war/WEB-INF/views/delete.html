@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Edit Smartphone</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#deleteProductForm').submit(function (event) {
+                var producer = $('#producer').val();
+                var model = $('#model').val();
+                var price = $('#price').val();
+                var json = {"producer":producer, "model":model, "price":price};
+                $.ajax({
+                    url: $("#deleteProductForm").attr("action"),
+                    data: JSON.stringify(json),
+                    type: "POST",
+
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("Accept", "application/json");
+                        xhr.setRequestHeader("Content-Type", "application/json");
+                    },
+                    success: function (product) {
+                        var respContent = "";
+
+                        respContent += "<span class='success'>Product was deleted: [";
+                        respContent += product.producer + " : ";
+                        respContent += product.model + " : ";
+                        respContent += product.price + "]</span>";
+                        $("#productFromResponse").html(respContent);
+                    }
+                });
+                event.preventDefault();
+            });
+        });
+    </script>
+</head>
+<body>
+<div id="container">
+    <h1>Edit product</h1>
+    <div>
+        <p>Here you can edit product info:</p>
+        <div id="productFromResponse"></div>
+    </div>
+    <form id="deleteProductForm" th:object="${product}">
+        <table>
+            <tbody>
+            <tr>
+                <td>Producer:</td>
+                <td>
+                    <select id="producer" name="producer" th:field="*{producer}">
+                        <option value="NOKIA">Nokia</option>
+                        <option value="IPHONE">iPhone</option>
+                        <option value="HTC">HTC</option>
+                        <option value="SAMSUNG">Samsung</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Model:</td>
+                <td><input th:field="*{model}" name="model" /></td>
+            </tr>
+            <tr>
+                <td>Price:</td>
+                <td><input th:field="*{price}" name="price"/></td>
+            </tr>
+            <tr>
+                <td><input type="submit" value="Delete" /></td>
+                <td></td>
+            </tr>
+            </tbody>
+        </table>
+    </form>
+    <a th:href="@{/products}">List</a>
+</div>
+</body>
+</html>
